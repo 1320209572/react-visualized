@@ -31,6 +31,11 @@ body {
   color: #e5e5e5;
 }
 
+/* React Flow Node Transitions - Crucial for "Physical" Tree Swap */
+.react-flow__node {
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); /* Spring-like ease */
+}
+
 /* Cyberpunk Grid Background */
 .bg-grid {
   background-size: 40px 40px;
@@ -70,4 +75,17 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Beam Animation */
+@keyframes beamFlow {
+    from {
+        stroke-dashoffset: 100;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+.animate-beam-flow {
+    animation: beamFlow 0.5s linear infinite;
 }

@@ -1,9 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'; // Keep framer-motion for simple enters/exits or other UI
+import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
-import type { Hook } from '../engine/types';
+import type { Hook, Fiber } from '../engine/types';
 import { StackVisualizer } from './StackVisualizer';
 import { DraggableHookNode } from './DraggableHookNode';
+import { useStepController } from '../hooks/useStepController';
+import { MousePointer2 } from 'lucide-react';
 
 // Constants
 const HOOK_WIDTH = 140;
@@ -68,16 +70,18 @@ const ElasticArrow = ({ startRef, endRef }: { startRef: React.RefObject<HTMLDivE
 export const MemoryView: React.FC = () => {
   const workInProgress = useStore(s => s.workInProgress);
   const currentRoot = useStore(s => s.currentRoot);
+  const { currentStep } = useStepController();
+  const currentAction = useStore(s => s.currentStepAction);
+
+  // Extract pointer index
+  const activeHookIndex = currentAction && 'index' in currentAction ? (currentAction as any).index : -1;
+  const showPointer = ['HOOK_ENTER', 'HOOK_READ_STATE', 'HOOK_COMPUTE'].includes(currentStep);
 
   // Extract hooks list
-  // Logic:
-  // We want to stabilize the view. Even if WIP is at Root, we want to see the Component's hooks.
-  // We traverse to find the first FunctionComponent that has state.
-
-  let sourceFiber: any = null;
+  let sourceFiber: Fiber | null = null;
 
   // Helper to find function component in a tree
-  const findFunComp = (fiber: any): any => {
+  const findFunComp = (fiber: Fiber | null): Fiber | null => {
       if (!fiber) return null;
       if (fiber.tag === 'FunctionComponent') return fiber;
       // Simple DFS
@@ -86,21 +90,16 @@ export const MemoryView: React.FC = () => {
 
   // 1. Try to find in WIP tree (if we are deep in render)
   if (workInProgress) {
-      // If we are currently AT the component, use it
       if (workInProgress.tag === 'FunctionComponent') {
           sourceFiber = workInProgress;
-      }
-      // If we are at Root, try to peek at child (if constructed) or alternate's child
-      else if (workInProgress.tag === 'HostRoot') {
-           // If alternate exists (update scenario), show the OLD state from alternate tree
-           // until we actually reach the component in the new tree.
+      } else if (workInProgress.tag === 'HostRoot') {
            if (workInProgress.alternate) {
                sourceFiber = findFunComp(workInProgress.alternate);
            }
       }
   }
 
-  // 2. If no source yet, try Current Root (Idle state or initial mount finished)
+  // 2. If no source yet, try Current Root
   if (!sourceFiber && currentRoot) {
       sourceFiber = findFunComp(currentRoot);
   }
@@ -160,11 +159,12 @@ export const MemoryView: React.FC = () => {
                     </defs>
                     {hooks.map((_, i) => {
                         if (i >= hooks.length - 1) return null;
+
                         return (
                             <ElasticArrow
-                                key={i}
-                                startRef={{ current: nodeRefs.current[i] }}
-                                endRef={{ current: nodeRefs.current[i+1] }}
+                                key={`${i}-${hooks.length}`}
+                                startRef={{ current: document.getElementById(`memory-hook-${i}`) as HTMLDivElement }}
+                                endRef={{ current: document.getElementById(`memory-hook-${i+1}`) as HTMLDivElement }}
                             />
                         );
                     })}
@@ -173,21 +173,38 @@ export const MemoryView: React.FC = () => {
                 {/* Nodes Layer */}
                 <AnimatePresence>
                     {hooks.map((hook, i) => {
-                        // Position in the center of the stage vertically
-                        // The stage is roughly 300-400px high in the layout
                         const x = START_X + i * (HOOK_WIDTH + GAP);
-                        const y = 100; // Fixed offset from top of container, much safer than window calc
+                        const y = 100;
 
                         return (
-                            <DraggableHookNode
-                                key={i}
-                                hook={hook}
-                                index={i}
-                                initialX={x}
-                                initialY={y}
-                                onDrag={() => {}}
-                                nodeRef={el => nodeRefs.current[i] = el}
-                            />
+                            <div key={i} className="absolute" style={{ left: 0, top: 0 }}>
+                                <DraggableHookNode
+                                    hook={hook}
+                                    index={i}
+                                    initialX={x}
+                                    initialY={y}
+                                    onDrag={() => {}}
+                                    nodeRef={(el) => { if(el) nodeRefs.current[i] = el; }}
+                                />
+
+                                {/* Physical Linked List Pointer */}
+                                {showPointer && activeHookIndex === i && (
+                                    <motion.div
+                                        layoutId="heap-pointer"
+                                        initial={{ opacity: 0, y: -20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                        style={{ left: x + HOOK_WIDTH / 2 - 12, top: y - 40 }}
+                                        className="absolute z-50 text-cyan-400 filter drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]"
+                                    >
+                                        <MousePointer2 size={24} className="fill-cyan-950" />
+                                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-cyan-900/80 px-2 py-0.5 rounded text-[10px] font-mono border border-cyan-500/30 text-cyan-200">
+                                            HEAD.next
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </div>
                         );
                     })}
                 </AnimatePresence>

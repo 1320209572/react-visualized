@@ -79,13 +79,13 @@ export const StackVisualizer: React.FC = () => {
                                 transition: { type: "spring", bounce: 0.3 }
                             },
                             exploded: {
-                                y: 20,
+                                y: -100, // Move UP (Sublimation)
                                 opacity: 0,
-                                scale: 0.95,
-                                filter: 'blur(2px)',
+                                scale: 0.9,
+                                filter: 'blur(4px)',
                                 transition: {
-                                    duration: 0.3,
-                                    ease: "easeIn"
+                                    duration: 0.8,
+                                    ease: "circOut"
                                 }
                             }
                         }}
@@ -93,8 +93,25 @@ export const StackVisualizer: React.FC = () => {
                         transition={{ type: "spring", stiffness: 200, damping: 20 }}
                         className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 backdrop-blur-xl shadow-[0_4px_20px_rgba(168,85,247,0.15)] relative overflow-hidden group perspective-500 origin-center"
                     >
-                        {/* Glass Shine */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none opacity-50" />
+                        {/* Soul Particle Effect */}
+                        {currentStep === 'STACK_CLEANUP' && (
+                            <motion.div
+                                className="absolute top-0 right-0 w-full h-full pointer-events-none"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                            >
+                                <motion.div
+                                    className="absolute right-4 top-4 w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_10px_#22d3ee]"
+                                    animate={{
+                                        y: -150,
+                                        x: 100, // Move towards Heap (Right)
+                                        scale: 0,
+                                        opacity: 0
+                                    }}
+                                    transition={{ duration: 1, ease: "easeOut" }}
+                                />
+                            </motion.div>
+                        )}
 
                         {/* Header */}
                         <div className="text-[10px] text-purple-300/70 mb-3 border-b border-purple-500/20 pb-1 flex justify-between items-center">

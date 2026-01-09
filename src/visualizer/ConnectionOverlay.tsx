@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useStore } from '../store';
 import { useStepController } from '../hooks/useStepController';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const ConnectionOverlay: React.FC = () => {
   const [lines, setLines] = useState<{ x1: number, y1: number, x2: number, y2: number, id: string, type: 'hook' | 'stack' | 'sync' }[]>([]);
@@ -100,16 +101,29 @@ export const ConnectionOverlay: React.FC = () => {
 
         if (line.type === 'hook') {
             return (
-                <path
-                    key={line.id}
-                    d={`M ${line.x1} ${line.y1} C ${line.x1 + 100} ${line.y1}, ${line.x2 - 100} ${line.y2}, ${line.x2} ${line.y2}`}
-                    fill="none"
-                    stroke="#4ec9b0"
-                    strokeWidth="2"
-                    strokeOpacity="0.4"
-                    strokeDasharray="5,5"
-                    {...commonProps}
-                />
+                <g key={line.id} {...commonProps}>
+                    {/* Pulsing Neural Core */}
+                    <motion.path
+                        d={`M ${line.x1} ${line.y1} C ${line.x1 + 100} ${line.y1}, ${line.x2 - 100} ${line.y2}, ${line.x2} ${line.y2}`}
+                        fill="none"
+                        stroke="#22d3ee"
+                        strokeWidth="2"
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{ pathLength: 1, opacity: 0.6 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
+
+                    {/* Data Orb - Travelling Entity */}
+                    {currentStep === 'DATA_TRANSFER' && (
+                        <circle r="4" fill="#ffffff" filter="url(#glow)">
+                            <animateMotion
+                                dur="1.5s"
+                                repeatCount="indefinite"
+                                path={`M ${line.x1} ${line.y1} C ${line.x1 + 100} ${line.y1}, ${line.x2 - 100} ${line.y2}, ${line.x2} ${line.y2}`}
+                            />
+                        </circle>
+                    )}
+                </g>
             );
         } else if (line.type === 'sync') {
              return (
@@ -129,7 +143,7 @@ export const ConnectionOverlay: React.FC = () => {
                     />
                     <circle r="3" fill="#38bdf8">
                         <animateMotion
-                            dur="2s"
+                            dur="3s"
                             repeatCount="indefinite"
                             path={`M ${line.x1} ${line.y1} C ${line.x1 + 100} ${line.y1}, ${line.x2 - 100} ${line.y2}, ${line.x2} ${line.y2}`}
                         />
@@ -139,6 +153,7 @@ export const ConnectionOverlay: React.FC = () => {
         } else {
             return (
                 <g key={line.id} {...commonProps}>
+                    {/* Neural Pulse Beam */}
                     <path
                         d={`M ${line.x1} ${line.y1} Q ${line.x1} ${(line.y1 + line.y2)/2}, ${line.x2} ${line.y2}`}
                         fill="none"
@@ -155,7 +170,7 @@ export const ConnectionOverlay: React.FC = () => {
                         strokeDasharray="10,10"
                         className="animate-beam-flow"
                     >
-                        <animate attributeName="stroke-dashoffset" from="100" to="0" dur="1s" repeatCount="indefinite" />
+                        <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.5s" repeatCount="indefinite" />
                     </path>
                 </g>
             );

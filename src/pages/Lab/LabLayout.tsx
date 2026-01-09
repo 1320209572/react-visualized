@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronLeft, Play, Pause, RefreshCw, Zap, BookOpen, SkipForward } from 'lucide-react';
+import { ChevronLeft, Play, Pause, Zap, BookOpen, SkipForward } from 'lucide-react';
 import { CodeEditor } from '../../visualizer/CodeEditor';
 import { FiberTree } from '../../visualizer/FiberTree';
 import { MemoryView } from '../../visualizer/MemoryView';
@@ -17,6 +17,7 @@ import { PhysicsLinks } from '../../visualizer/PhysicsLinks';
 import { useStepController } from '../../hooks/useStepController';
 import { PhaseEffects } from '../../visualizer/PhaseEffects';
 import { VisualOrchestrator } from '../../visualizer/VisualOrchestrator';
+import { SubtitleBar } from '../../components/ui/SubtitleBar';
 
 const allScenarios = [...useStateScenarios, ...useEffectScenarios];
 
@@ -29,8 +30,6 @@ export const LabLayout: React.FC<LabLayoutProps> = ({ labId, onBack }) => {
   const step = useStore(s => s.step);
   const loadScenario = useStore(s => s.loadScenario);
   const currentScenario = useStore(s => s.currentScenario);
-  const workInProgress = useStore(s => s.workInProgress);
-  const wipRoot = useStore(s => s.wipRoot);
 
   // Step Controller
   const { definition, stepIndex, currentStep } = useStepController();
@@ -64,18 +63,28 @@ export const LabLayout: React.FC<LabLayoutProps> = ({ labId, onBack }) => {
     return () => clearInterval(timer);
   }, [isPlaying, step, currentStep]);
 
+  // Spotlight Logic
+  const isFocusMode = ['HOOK_ENTER', 'HOOK_READ_STATE', 'HOOK_COMPUTE'].includes(currentStep);
+
   return (
     <div className={clsx(
-        "flex flex-col h-screen w-screen bg-[#050505] text-white transition-colors duration-1000 overflow-hidden font-sans",
+        "flex flex-col h-screen w-screen bg-[#050505] text-white transition-colors duration-1000 overflow-hidden font-sans relative",
         phase === 'render' && "shadow-[inset_0_0_100px_rgba(147,51,234,0.1)]",
         phase === 'commit' && "shadow-[inset_0_0_100px_rgba(34,197,94,0.1)]"
     )}>
+      {/* Global Spotlight Overlay */}
+      <div className={clsx(
+          "absolute inset-0 bg-black/60 z-30 pointer-events-none transition-opacity duration-500",
+          isFocusMode ? "opacity-100" : "opacity-0"
+      )} />
+
       <LabBackground />
       <ConnectionOverlay />
       <ActionOverlay />
       <PhysicsLinks />
       <PhaseEffects />
       <VisualOrchestrator />
+      <SubtitleBar />
 
       {showTutorial && !isPlaying && (
           <TutorialOverlay onDismiss={() => setShowTutorial(false)} />
@@ -94,27 +103,7 @@ export const LabLayout: React.FC<LabLayoutProps> = ({ labId, onBack }) => {
             <h2 className="text-lg font-bold tracking-tight text-white/50">
                 {currentScenario?.title || 'REACT LAB'}
             </h2>
-            <div className="h-8 w-[1px] bg-white/10 mx-2" />
-
-            {/* Step Controller UI - BILINGUAL & ATOMIC */}
-            <div className="flex flex-col items-start min-w-[500px]">
-                <div className="flex items-center gap-2">
-                    <span className={clsx(
-                        "text-[10px] font-mono uppercase px-2 py-0.5 rounded border transition-all duration-500",
-                        phase === 'render' && "border-purple-500/50 text-purple-400 bg-purple-500/10 shadow-[0_0_10px_rgba(168,85,247,0.4)]",
-                        phase === 'commit' && "border-green-500/50 text-green-400 bg-green-500/10 shadow-[0_0_10px_rgba(34,197,94,0.4)]",
-                        phase === 'idle' && "border-white/10 text-gray-500"
-                    )}>
-                    PHASE: {definition.phase}
-                    </span>
-                    <span className="text-[10px] font-mono text-cyan-400 font-bold">
-                        STEP {stepIndex}: {definition.id}
-                    </span>
-                </div>
-                <div key={definition.id + stepIndex} className="text-xs text-gray-300 mt-0.5 font-sans animate-in fade-in slide-in-from-bottom-1 duration-300">
-                    {definition.description}
-                </div>
-            </div>
+            {/* Removed internal step controller UI since we have SubtitleBar now */}
           </div>
         </div>
 
@@ -139,11 +128,11 @@ export const LabLayout: React.FC<LabLayoutProps> = ({ labId, onBack }) => {
       </header>
 
       {/* 3D Stage Container */}
-      <main className="flex-1 flex p-8 gap-8 perspective-[2000px] overflow-hidden">
+      <main className="flex-1 flex p-8 gap-8 perspective-[2000px] overflow-hidden relative z-40">
 
         {/* Scenario Sidebar */}
         <div className={clsx(
-            "w-[250px] flex flex-col gap-4 transition-all duration-500 ease-out",
+            "w-[250px] flex flex-col gap-4 transition-all duration-500 ease-out z-50",
             showSidebar ? "translate-x-0 opacity-100" : "-translate-x-[300px] opacity-0 absolute"
         )}>
             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest px-2">Scenarios</h3>
@@ -166,9 +155,12 @@ export const LabLayout: React.FC<LabLayoutProps> = ({ labId, onBack }) => {
             </div>
         </div>
 
-        {/* Left Wing (Code) - Tilted Right */}
+        {/* Left Wing (Code) - Spotlight Target 1 */}
         <div
-            className="w-[400px] flex flex-col gap-6 transition-transform duration-700 ease-out origin-right"
+            className={clsx(
+                "w-[400px] flex flex-col gap-6 transition-all duration-700 ease-out origin-right",
+                isFocusMode ? "opacity-30 blur-sm scale-95" : "opacity-100"
+            )}
             style={{ transform: 'rotateY(5deg) translateZ(-50px)' }}
         >
           <GlassPanel className="flex-1 flex flex-col border-l-4 border-l-cyan-500/20">
@@ -180,18 +172,24 @@ export const LabLayout: React.FC<LabLayoutProps> = ({ labId, onBack }) => {
           </GlassPanel>
         </div>
 
-        {/* Center Stage (Visualizer) - Facing Front but floating */}
+        {/* Center Stage (Visualizer) */}
         <div
-            className="flex-1 flex flex-col gap-6 transition-transform duration-700 ease-out"
+            className="flex-1 flex flex-col gap-6 transition-transform duration-700 ease-out relative"
             style={{ transform: 'translateZ(0px)' }}
         >
-          {/* Fiber Tree */}
-          <GlassPanel className="flex-1 flex flex-col border-t-4 border-t-purple-500/20" variant="heap">
+          {/* Fiber Tree - Layered Space */}
+          <GlassPanel className={clsx(
+              "flex-1 flex flex-col border-t-4 border-t-purple-500/20 transition-all duration-500",
+              isFocusMode ? "opacity-30 blur-sm" : "opacity-100"
+          )} variant="heap">
             <FiberTree />
           </GlassPanel>
 
-          {/* Memory Deck */}
-          <div className="h-[300px] relative">
+          {/* Memory Deck & Stack - Spotlight Target 2 (Active Area) */}
+          <div className={clsx(
+              "h-[300px] relative transition-all duration-500",
+              isFocusMode ? "z-50 scale-105" : ""
+          )}>
              <div className="absolute inset-0 bg-black/40 blur-xl -z-10 transform scale-95 translate-y-4" />
              <GlassPanel className="h-full w-full flex flex-col border-b-4 border-b-cyan-500/20" variant="stack">
                 <MemoryView />
