@@ -5,6 +5,7 @@ import { HookCollectionPage } from './pages/Home/HookCollectionPage';
 import { ScenarioListPage } from './pages/Home/ScenarioListPage';
 import { SCENARIOS } from './data/scenarios';
 import { useSimulationStore } from './store/simulationStore';
+import FiberDeepDiveStudio from './pages/Lab/FiberDeepDiveStudio'; // Import new Studio
 
 type ViewState = 'hooks' | 'scenarios' | 'lab';
 
@@ -37,6 +38,14 @@ function App() {
 
   const currentScenario = SCENARIOS.find(s => s.id === currentScenarioId);
 
+  // Temporary: Directly show the new Studio for review if needed
+  // Or integrate it as the 'lab' view.
+  // For now, let's keep the flow but replace the Lab content with the new Studio if desired,
+  // OR just mount it temporarily to see it immediately.
+
+  // UNCOMMENT THIS TO VIEW THE NEW STUDIO IMMEDIATELY:
+  // return <FiberDeepDiveStudio />;
+
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-black text-white">
       {view === 'hooks' && (
@@ -57,11 +66,27 @@ function App() {
             INITIALIZING GENESIS ENGINE...
             </div>
         }>
-            <GenesisScene />
+            {/* Swapping old Lab with new Studio for this scenario */}
+            {/* To keep old behavior for other scenarios, we could check ID */}
+            {/* But user asked to "see it in browser", so let's render it here or just override return */}
+
+            {/* Option A: Render the 3D Scene (Old) */}
+            {/* <GenesisScene />
             <Overlay
                 scenario={currentScenario}
                 onBack={handleBackToScenarios}
-            />
+            /> */}
+
+            {/* Option B: Render the new 2D/3D Hybrid Studio (New) */}
+             <FiberDeepDiveStudio />
+
+             {/* Add a temporary back button for navigation testing */}
+             <button
+                onClick={handleBackToScenarios}
+                className="absolute top-4 right-4 z-[100] px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/50 rounded hover:bg-red-500/40"
+             >
+                EXIT STUDIO
+             </button>
         </Suspense>
       )}
     </div>
