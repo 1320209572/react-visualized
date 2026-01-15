@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, Play, Pause, Zap, BookOpen, SkipForward } from 'lucide-react';
 import { CodeEditor } from '../../visualizer/CodeEditor';
-import { FiberTree } from '../../visualizer/FiberTree';
+import { FiberTree3D } from '../../visualizer/FiberTree3D';
 import { MemoryView } from '../../visualizer/MemoryView';
 import { RenderPreview } from '../../visualizer/RenderPreview';
 import { ConnectionOverlay } from '../../visualizer/ConnectionOverlay';
@@ -182,7 +182,7 @@ export const LabLayout: React.FC<LabLayoutProps> = ({ labId, onBack }) => {
               "flex-1 flex flex-col border-t-4 border-t-purple-500/20 transition-all duration-500",
               isFocusMode ? "opacity-30 blur-sm" : "opacity-100"
           )} variant="heap">
-            <FiberTree />
+            <FiberTree3D />
           </GlassPanel>
 
           {/* Memory Deck & Stack - Spotlight Target 2 (Active Area) */}

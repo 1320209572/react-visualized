@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, Plane, Box, Edges } from '@react-three/drei';
 import { useSimulationStore } from '../../store/simulationStore';
+import { DesignTokens, SemanticColors } from '../../design/tokens';
 
 /**
  * Update Queue wall: glass shelf on the right inner wall, matching the reference
@@ -18,28 +19,32 @@ export const QueueRack: React.FC = () => {
             {/* Backing glass panel */}
             <Plane args={[2.8, 4.7]} position={[0, -0.1, 0]} rotation={[0, -Math.PI / 2, 0]}>
                 <meshPhysicalMaterial
-                    color="#0b0b10"
+                    color={SemanticColors.queueRack.background}
                     transparent
-                    opacity={0.18}
-                    roughness={0.18}
-                    metalness={0.05}
+                    opacity={DesignTokens.glass.opacity.high * 0.56}
+                    roughness={DesignTokens.glass.material.roughness * 4.5}
+                    metalness={DesignTokens.glass.material.metalness * 0.6}
                 />
             </Plane>
             <Box args={[0.05, 4.8, 2.8]} position={[0.03, -0.1, 0]} rotation={[0, -Math.PI / 2, 0]}>
-                <meshPhysicalMaterial color="#22d3ee" transparent opacity={0.1} />
-                <Edges color="#22d3ee" />
+                <meshPhysicalMaterial
+                    color={SemanticColors.queueRack.border}
+                    transparent
+                    opacity={DesignTokens.glass.opacity.high * 0.31}
+                />
+                <Edges color={SemanticColors.queueRack.border} />
             </Box>
 
             {/* Header */}
             <Text
                 position={[0.1, 2.35, 0]}
-                fontSize={0.26}
-                color="#22d3ee"
+                fontSize={DesignTokens.typography.fontSize.xl + 0.02}
+                color={SemanticColors.queueRack.border}
                 rotation={[0, -Math.PI / 2, 0]}
                 anchorX="center"
                 anchorY="middle"
-                outlineWidth={0.02}
-                outlineColor="#0b0b0f"
+                outlineWidth={DesignTokens.typography.outline.standard}
+                outlineColor={DesignTokens.colors.background.secondary}
             >
                 Update Queue
             </Text>
@@ -53,23 +58,23 @@ export const QueueRack: React.FC = () => {
                     <group key={update.id} position={[0.12, y, 0]} rotation={[0, -Math.PI / 2, 0]} scale={scale}>
                         <Box args={[0.06, 0.75, 2.2]}>
                             <meshPhysicalMaterial
-                                color="#0ea5e9"
-                                emissive={activeCollapse ? "#38bdf8" : "#0ea5e9"}
-                                emissiveIntensity={activeCollapse ? 0.35 : 0.18}
-                                transmission={0.7}
-                                thickness={0.5}
-                                roughness={0.12}
+                                color={SemanticColors.queueRack.card}
+                                emissive={activeCollapse ? DesignTokens.colors.primary.light : SemanticColors.queueRack.cardEmissive}
+                                emissiveIntensity={activeCollapse ? DesignTokens.emissive.normal : DesignTokens.emissive.subtle}
+                                transmission={DesignTokens.glass.transmission.medium}
+                                thickness={DesignTokens.glass.material.thickness}
+                                roughness={DesignTokens.glass.material.roughness * 3}
                                 transparent
-                                opacity={0.28}
+                                opacity={DesignTokens.glass.opacity.high * 0.88}
                             />
-                            <Edges color="#38bdf8" />
+                            <Edges color={DesignTokens.colors.primary.light} />
                         </Box>
 
                         {/* Upper row: sequence + snapshot/payload */}
                         <Text
                             position={[0.05, 0.16, 0]}
-                            fontSize={0.14}
-                            color="#e2e8f0"
+                            fontSize={DesignTokens.typography.fontSize.sm}
+                            color={SemanticColors.queueRack.text}
                             anchorX="left"
                             anchorY="middle"
                         >
@@ -78,8 +83,8 @@ export const QueueRack: React.FC = () => {
                         {/* Lower row: Chinese hint */}
                         <Text
                             position={[0.05, -0.12, 0]}
-                            fontSize={0.12}
-                            color="#cbd5e1"
+                            fontSize={DesignTokens.typography.fontSize.xs}
+                            color={DesignTokens.colors.text.tertiary}
                             anchorX="left"
                             anchorY="middle"
                         >

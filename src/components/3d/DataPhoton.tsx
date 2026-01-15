@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Sphere, Trail, Text, Line, Box, Edges } from '@react-three/drei';
 import { Vector3, Group } from 'three';
 import { useSimulationStore } from '../../store/simulationStore';
+import { SemanticColors } from '../../design/tokens';
 
 export const DataPhoton: React.FC = () => {
   const activePhoton = useSimulationStore(s => s.activePhoton);
@@ -64,13 +65,13 @@ export const DataPhoton: React.FC = () => {
 
   return (
     <group ref={groupRef}>
-        <Trail width={0.4} length={8} color="#f97316" attenuation={(t) => t * t}>
+        <Trail width={0.4} length={8} color={SemanticColors.dataPhoton.trail} attenuation={(t) => t * t}>
             <Sphere args={[0.14, 16, 16]}>
-                <meshBasicMaterial color="#f97316" transparent opacity={0.85} />
+                <meshBasicMaterial color={SemanticColors.dataPhoton.core} transparent opacity={0.85} />
             </Sphere>
             <Box args={[0.28, 0.28, 0.28]}>
                 <meshBasicMaterial transparent opacity={0} />
-                <Edges color="#f97316" scale={1.0} />
+                <Edges color={SemanticColors.dataPhoton.core} scale={1.0} />
             </Box>
         </Trail>
 
@@ -79,7 +80,7 @@ export const DataPhoton: React.FC = () => {
              <line>
                 <bufferGeometry ref={lineGeoRef} />
                 <lineBasicMaterial
-                    color="#fbbf24"
+                    color={SemanticColors.dataPhoton.text}
                     transparent
                     opacity={0.35 * (1 - progress)}
                 />
@@ -89,7 +90,7 @@ export const DataPhoton: React.FC = () => {
         <Text
             position={[0, 0.6, 0]}
             fontSize={0.25}
-            color="#fdba74"
+            color={SemanticColors.dataPhoton.core}
             anchorX="center"
             anchorY="bottom"
             // Font removed for stability

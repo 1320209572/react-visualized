@@ -3,6 +3,7 @@ import { Play, Pause, SkipForward, SkipBack, Maximize2, Layers, Cpu, Code2, Smar
 import { MemoryInspector } from '../../components/ui/MemoryInspector';
 import { CodeAndDispatchPanel } from '../../components/ui/CodeAndDispatchPanel';
 import { FiberArchitecturePanel } from '../../components/ui/FiberArchitecturePanel';
+import { CallStackPanel } from '../../components/ui/CallStackPanel';
 
 const FiberDeepDiveStudio: React.FC = () => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -51,34 +52,42 @@ const FiberDeepDiveStudio: React.FC = () => {
                     <FiberArchitecturePanel />
                 </div>
 
-                {/* 3. Device Simulator & Stack (Bottom Left) */}
-                <div className="col-span-4 row-span-5 bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-xl flex flex-col">
-                    <div className="h-10 border-b border-white/5 flex items-center justify-between px-4 bg-white/5">
-                         <div className="flex items-center gap-2 text-[10px] font-bold tracking-widest text-slate-400 font-mono uppercase">
-                            <Smartphone size={12} className="text-slate-400" />
-                            <span>RENDER OUTPUT</span>
+                {/* 3. Device Simulator & Call Stack (Bottom Left) */}
+                <div className="col-span-4 row-span-5 flex flex-col gap-2">
+                    {/* 3a. Device Simulator (Top Half) */}
+                    <div className="flex-1 bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-xl flex flex-col">
+                        <div className="h-9 border-b border-white/5 flex items-center justify-between px-4 bg-white/5">
+                            <div className="flex items-center gap-2 text-[10px] font-bold tracking-widest text-slate-400 font-mono uppercase">
+                                <Smartphone size={11} className="text-slate-400" />
+                                <span>RENDER OUTPUT</span>
+                            </div>
+                        </div>
+                        <div className="flex-1 p-4 flex items-center justify-center bg-black/40">
+                            {/* Dark Mode Phone Frame */}
+                            <div className="w-[140px] h-[240px] border-[3px] border-slate-800 rounded-3xl bg-[#050505] relative overflow-hidden shadow-2xl ring-1 ring-white/5">
+                                {/* Notch */}
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-4 bg-slate-900 rounded-b-xl z-20" />
+
+                                {/* Screen Content */}
+                                <div className="p-3 mt-6 flex flex-col items-center justify-center h-full gap-4 text-slate-200">
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-[9px] uppercase tracking-widest text-slate-600 mb-1">Count</span>
+                                        <div className="text-4xl font-bold font-mono text-white">0</div>
+                                    </div>
+                                    <button className="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 text-[10px] font-bold rounded-lg transition-colors border border-slate-700">
+                                        Increment
+                                    </button>
+                                </div>
+
+                                {/* Home Indicator */}
+                                <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-0.5 bg-slate-800 rounded-full" />
+                            </div>
                         </div>
                     </div>
-                    <div className="flex-1 p-6 flex items-center justify-center bg-black/40">
-                        {/* Dark Mode Phone Frame */}
-                        <div className="w-[160px] h-[280px] border-[3px] border-slate-800 rounded-3xl bg-[#050505] relative overflow-hidden shadow-2xl ring-1 ring-white/5">
-                            {/* Notch */}
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-slate-900 rounded-b-xl z-20" />
 
-                            {/* Screen Content */}
-                            <div className="p-4 mt-8 flex flex-col items-center justify-center h-full gap-6 text-slate-200">
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[10px] uppercase tracking-widest text-slate-600 mb-2">Count</span>
-                                    <div className="text-5xl font-bold font-mono text-white">0</div>
-                                </div>
-                                <button className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-bold rounded-lg transition-colors border border-slate-700">
-                                    Increment
-                                </button>
-                            </div>
-
-                            {/* Home Indicator */}
-                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-12 h-1 bg-slate-800 rounded-full" />
-                        </div>
+                    {/* 3b. Call Stack (Bottom Half) */}
+                    <div className="flex-1">
+                        <CallStackPanel />
                     </div>
                 </div>
 

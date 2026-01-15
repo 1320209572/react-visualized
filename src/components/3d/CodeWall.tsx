@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Text, Plane, Box, Edges } from '@react-three/drei';
 import { useSimulationStore } from '../../store/simulationStore';
+import { DesignTokens, SemanticColors } from '../../design/tokens';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 
@@ -47,28 +48,32 @@ export const CodeWall: React.FC = () => {
             {/* Glass backing */}
             <Plane args={[3.8, 3.8]} position={[0, 0, 0]}>
                 <meshPhysicalMaterial
-                    color="#0b0b10"
+                    color={SemanticColors.codeWall.background}
                     transparent
-                    opacity={0.32}
-                    roughness={0.18}
-                    metalness={0.05}
+                    opacity={DesignTokens.glass.opacity.high}
+                    roughness={DesignTokens.glass.material.roughness * 4.5}
+                    metalness={DesignTokens.glass.material.metalness * 0.6}
                 />
             </Plane>
             <Box args={[0.08, 3.9, 3.9]}>
-                <meshPhysicalMaterial color="#22d3ee" transparent opacity={0.08} />
-                <Edges color="#22d3ee" />
+                <meshPhysicalMaterial
+                    color={SemanticColors.codeWall.border}
+                    transparent
+                    opacity={DesignTokens.glass.opacity.high * 0.25}
+                />
+                <Edges color={SemanticColors.codeWall.border} />
             </Box>
 
             {/* Header */}
             <Text
                 position={[0, 2.05, 0]}
-                fontSize={0.24}
-                color="#22d3ee"
+                fontSize={DesignTokens.typography.fontSize.xl}
+                color={SemanticColors.codeWall.border}
                 rotation={[0, 0, 0]}
                 anchorX="center"
                 anchorY="middle"
-                outlineWidth={0.02}
-                outlineColor="#0b0b0f"
+                outlineWidth={DesignTokens.typography.outline.standard}
+                outlineColor={DesignTokens.colors.background.secondary}
             >
                 Source Logic
             </Text>
@@ -83,26 +88,31 @@ export const CodeWall: React.FC = () => {
                                 <group>
                                     <Box args={[3.3, 0.32, 0.05]} position={[1.65, -0.08, -0.05]}>
                                         <meshPhysicalMaterial
-                                            color="#06b6d4"
-                                            emissive="#0ea5e9"
-                                            emissiveIntensity={0.75}
-                                            transmission={0.75}
-                                            thickness={0.2}
+                                            color={SemanticColors.codeWall.activeLine}
+                                            emissive={DesignTokens.colors.primary.light}
+                                            emissiveIntensity={DesignTokens.emissive.strong}
+                                            transmission={DesignTokens.glass.transmission.medium}
+                                            thickness={DesignTokens.glass.material.thickness * 0.4}
                                             transparent
-                                            opacity={0.6}
+                                            opacity={DesignTokens.glass.opacity.medium + 0.1}
                                         />
-                                        <Edges color="#22d3ee" />
+                                        <Edges color={SemanticColors.codeWall.border} />
                                     </Box>
                                     <line ref={laserRef}>
                                         <bufferGeometry />
-                                        <lineBasicMaterial color="#c084fc" transparent opacity={0.9} linewidth={2} />
+                                        <lineBasicMaterial
+                                            color={DesignTokens.colors.accent2.purpleLight}
+                                            transparent
+                                            opacity={0.9}
+                                            linewidth={2}
+                                        />
                                     </line>
                                 </group>
                             )}
 
                             <Text
-                                fontSize={0.16}
-                                color={isActive ? "#ffffff" : "#94a3b8"}
+                                fontSize={DesignTokens.typography.fontSize.base}
+                                color={isActive ? DesignTokens.colors.text.primary : DesignTokens.colors.text.muted}
                                 anchorX="left"
                                 anchorY="top"
                             >

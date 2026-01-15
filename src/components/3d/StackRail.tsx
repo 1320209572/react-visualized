@@ -3,6 +3,7 @@ import { Text, Box, Edges } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useSimulationStore } from '../../store/simulationStore';
 import { ExplosionParticles } from './ExplosionParticles';
+import { DesignTokens, SemanticColors } from '../../design/tokens';
 import * as THREE from 'three';
 
 export const StackRail: React.FC = () => {
@@ -14,11 +15,11 @@ export const StackRail: React.FC = () => {
             {/* Header */}
             <Text
                 position={[0, 2.6, 0]}
-                fontSize={0.26}
-                color="#a855f7"
+                fontSize={DesignTokens.typography.fontSize.xl + 0.02}
+                color={SemanticColors.stackRail.frame}
                 anchorX="center"
-                outlineWidth={0.025}
-                outlineColor="#0b0b0f"
+                outlineWidth={DesignTokens.typography.outline.thick}
+                outlineColor={DesignTokens.colors.background.secondary}
             >
                 Execution Stack
             </Text>
@@ -30,18 +31,18 @@ export const StackRail: React.FC = () => {
 
             {/* Explosion Effect on Commit */}
             {isMutating && (
-                <ExplosionParticles position={[0, 1.5, 0]} color="#a855f7" />
+                <ExplosionParticles position={[0, 1.5, 0]} color={SemanticColors.stackRail.frame} />
             )}
 
             {/* HandleClick floating label */}
             <Text
                 position={[1.8, 0.6, 0]}
-                fontSize={0.18}
-                color="#cbd5e1"
+                fontSize={DesignTokens.typography.fontSize.lg}
+                color={SemanticColors.stackRail.label}
                 anchorX="left"
                 anchorY="middle"
-                outlineWidth={0.02}
-                outlineColor="#0b0b0f"
+                outlineWidth={DesignTokens.typography.outline.standard}
+                outlineColor={DesignTokens.colors.background.secondary}
             >
                 handleClick()
             </Text>
@@ -64,37 +65,63 @@ const StackFrameSlice: React.FC<{ slot: any, index: number }> = ({ slot, index }
             {/* Glass Slab */}
             <Box args={[3.4, 1.1, 0.18]}>
                 <meshPhysicalMaterial
-                    color={slot.isLocked ? "#dc2626" : "#a855f7"}
-                    emissive={slot.isLocked ? "#b91c1c" : "#7c3aed"}
-                    emissiveIntensity={slot.isLocked ? 0.55 : 0.28}
-                    transmission={0.55}
-                    thickness={0.6}
-                    roughness={0.1}
+                    color={slot.isLocked ? SemanticColors.stackRail.locked : SemanticColors.stackRail.frame}
+                    emissive={slot.isLocked ? SemanticColors.stackRail.lockedEmissive : SemanticColors.stackRail.frameEmissive}
+                    emissiveIntensity={slot.isLocked ? DesignTokens.emissive.strong : DesignTokens.emissive.normal}
+                    transmission={DesignTokens.glass.transmission.low}
+                    thickness={DesignTokens.glass.material.thickness * 1.2}
+                    roughness={DesignTokens.glass.material.roughness * 2.5}
                     transparent
-                    opacity={slot.isLocked ? 0.75 : 0.82}
+                    opacity={slot.isLocked ? DesignTokens.glass.opacity.low : (DesignTokens.glass.opacity.medium + 0.32)}
                 />
-                <Edges color={slot.isLocked ? "#ef4444" : "#c084fc"} />
+                <Edges color={slot.isLocked ? DesignTokens.colors.warning.redLight : DesignTokens.colors.accent2.purpleLight} />
             </Box>
 
             {/* Slots */}
             <group position={[-1.1, 0.1, 0.14]}>
-                <Text fontSize={0.18} color="#e2e8f0" anchorX="left">count</Text>
-                <Text fontSize={0.34} color="#ffffff" anchorX="left" position={[1.2, 0, 0]}>{slot.value}</Text>
+                <Text
+                    fontSize={DesignTokens.typography.fontSize.lg}
+                    color={SemanticColors.stackRail.text}
+                    anchorX="left"
+                >
+                    count
+                </Text>
+                <Text
+                    fontSize={DesignTokens.typography.fontSize.xxxl}
+                    color={DesignTokens.colors.text.primary}
+                    anchorX="left"
+                    position={[1.2, 0, 0]}
+                >
+                    {slot.value}
+                </Text>
             </group>
             <group position={[-1.1, -0.25, 0.14]}>
-                <Text fontSize={0.16} color="#cbd5e1" anchorX="left">setCount</Text>
-                <Text fontSize={0.16} color="#c084fc" anchorX="left" position={[1.2, 0, 0]}>{'()=>dispatch'}</Text>
+                <Text
+                    fontSize={DesignTokens.typography.fontSize.base}
+                    color={SemanticColors.stackRail.label}
+                    anchorX="left"
+                >
+                    setCount
+                </Text>
+                <Text
+                    fontSize={DesignTokens.typography.fontSize.base}
+                    color={DesignTokens.colors.accent2.purpleLight}
+                    anchorX="left"
+                    position={[1.2, 0, 0]}
+                >
+                    {'()=>dispatch'}
+                </Text>
             </group>
 
             {/* Locked badge */}
             {slot.isLocked && (
                 <Text
                     position={[0, 0.75, 0]}
-                    fontSize={0.16}
-                    color="#fca5a5"
+                    fontSize={DesignTokens.typography.fontSize.base}
+                    color={DesignTokens.colors.warning.redLight}
                     anchorX="center"
-                    outlineWidth={0.02}
-                    outlineColor="#0b0b0f"
+                    outlineWidth={DesignTokens.typography.outline.standard}
+                    outlineColor={DesignTokens.colors.background.secondary}
                 >
                     LOCKED SNAPSHOT
                 </Text>
